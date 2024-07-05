@@ -2,7 +2,7 @@
 -- under MIT license.
 
 fzy = require("lib/fzy")
-filename = "etankdata.txt"
+filename = "data/etankdata.txt"
 
 channels = {
     "white",
@@ -51,14 +51,16 @@ function confirm(text, default)
     return default
 end 
 
-function charToColor(char)
-    local num = tonumber(char, 16)
-    return num+1
+function charToColor(chars)
+    return {
+        tonumber(chars[1], 16) + 1,
+        tonumber(chars[2], 16) + 1,
+        tonumber(chars[3], 16) + 1,
+    }
 end
 
-function colorToChar(colorIndex)
-    local char = string.format("%x", colorIndex)
-    return char
+function colorToChar(colorIndexes)
+    return string.format("%x%x%x", colorIndexes[1], colorIndexes[2], colorIndexes[3])
 end
         
 
@@ -115,9 +117,10 @@ function updateScreen()
 end
 
 for line in io.lines(filename) do
-    local colorStr = string.sub(line, 1, 3)
-    
-    fluids[#fluids+1] = line
+    local colorChars = string.sub(line, 1, 3)
+    local c = charToColor(colorChars)
+    local colorStr = channels[c[1]] .. " - " .. channels[c[2]] .. " - " .. channels[c[3]]
+    fluids[#fluids+1] = string.sub(line, 4, #line) .. " (" .. colorStr .. ")"
     print(#fluids)
 end
 
@@ -132,6 +135,9 @@ while true do
         --debugText = " " .. keys.getName(char)
         if char == keys.backspace then
             input = #input > 0 and string.sub(input, 1, #input - 1) or input
+        end
+        if char == keys.enter then
+            --
         end
         if char == keys.leftCtrl or char == keys.rightCtrl then
             term.clear()
