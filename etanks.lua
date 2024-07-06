@@ -23,6 +23,10 @@ local channels = {
     "black"
 }
 
+local options
+
+local width, height = term.getSize()
+
 -- no character reading? fuck off.
 local string_meta = getmetatable('')
 function string_meta:__index( key )
@@ -66,6 +70,202 @@ end
 function sortFzyOutput(a, b)
     return a[3] > b[3]
 end
+
+local menuSelection = 1
+
+function drawMenu()
+    term.setCursorPos(1, height)
+    term.clearLine()
+    for i = 1, #options do
+        if i == menuSelection then
+            term.write("[")
+            term.setTextColor(colors.lightBlue)
+            term.write(options[i])
+            term.setTextColor(colors.white)
+            term.write("]  ")
+        else
+            term.write(" " .. options[i] .. "   ")
+        end
+    end
+end
+
+function openManageMenu()
+    menuSelection = 1
+    while true do
+        options = {"Add fluid", "Edit fluid", "Remove fluid", "Back"}
+        drawMenu()
+        local event, key, _ = os.pullEvent("key")
+        if key == keys.left and menuSelection > 1 then
+            menuSelection = menuSelection - 1
+        elseif key == keys.right and menuSelection < #options then
+            menuSelection = menuSelection + 1
+        elseif key == keys.enter then
+            if menuSelection == 1 then
+                if openAddMenu() then return true end
+                menuSelection = 1
+            elseif menuSelection == 2 then
+                if openEditMenu() then return true end
+                menuSelection = 2
+            elseif menuSelection == 3 then
+                if openRemoveMenu() then return true end
+                menuSelection = 3
+            elseif menuSelection == 4 then
+                return false
+            end
+        elseif key == keys.leftCtrl or key == keys.rightCtrl then
+            quit()
+        end
+    end
+end
+
+local chInput = ""
+local chSelect = 1
+local chResult = {}
+local chColors = {}
+
+function chUpdate()
+    chResult = fzy.filter(chInput, channels, false)
+    table.sort(chResult, sortFzyOutput)
+    
+    term.clear()
+    term.setBackgroundColor(colors.black)
+    for i = 1, height-1 do
+        if chResult[i] == nil then break end
+        term.setCursorPos(1, height-i-2)
+        
+        local curIdx = chResult[i][1]
+        local cur = channels[ curIdx ]
+
+        if i == chSelect then
+            --term.setBackgroundColor(colors.white)
+            term.setTextColor(colors.black)
+            if curIdx == 16 then
+                term.setBackgroundColor(colors.white)
+            else
+                term.setBackgroundColor(2^(curIdx-1))
+            end
+        else
+            if curIdx == 16 then
+                term.setTextColor(colors.white)
+            else
+                term.setTextColor(2^(curIdx-1))
+            end
+        end
+        term.write(cur)
+        term.setBackgroundColor(colors.black)
+        term.setTextColor(colors.white)
+    end
+    term.setCursorPos(1, height-1)
+    for _, i in pairs(chColors) do
+        term.setTextColor(2^(i-1))
+        term.write(channels[i])
+        term.setTextColor(colors.white)
+        term.write(" - ")
+    end
+    term.write(chInput)
+    term.setCursorPos(1, height)
+    term.setTextColor(colors.blue)
+
+    term.write("Select the ")
+    term.setTextColor(colors.lightBlue)
+    term.write(#chColors == 0 and "first" or (#chColors == 1 and "second" or "third"))
+    term.setTextColor(colors.blue)
+    term.write(" color.")
+
+    term.setTextColor(colors.white)
+end
+
+function chSelector(index)
+    chInput = ""
+    chColors = {}
+    chUpdate()
+    while true do
+        local event, key, _ = os.pullEvent()
+        if event == "char" then
+            chInput = chInput .. key
+            chSelect = 1
+        elseif event == "key" then
+            if key == keys.backspace then
+                chInput = #chInput > 0 and string.sub(chInput, 1, #chInput - 1) or chInput
+                chSelect = 1
+            elseif key == keys.enter then
+                chColors[#chColors+1] = chResult[chSelect][1]
+                if #chColors == 3 then
+                    return true
+                end
+            elseif key == keys.leftCtrl or key == keys.rightCtrl then
+                quit()
+            elseif key == keys.delete then
+                chInput = ""
+                chSelect = 1
+            elseif key == keys.up and chSelect < #chResult then
+                chSelect = chSelect + 1
+            elseif key == keys.down and chSelect > 1 then
+                chSelect = chSelect - 1
+            end
+        end
+        chUpdate()
+    end
+end
+
+function openAddMenu()
+    if chSelector(#fluidData + 1) then
+        fluidStr[#fluidStr+1] = input .. " (" .. channels[chColors[1]+1] .. " - " .. channels[chColors[2]+1] .. " - " .. channels[chColors[3]+1] .. ")"
+        local chColorChars = {}
+        for i = 1, 3 do
+            chColorChars[i] = string.format("%x", chColors[i] - 1)
+        end
+        fluidData[#fluidData+1] = {input, chColorChars[1], channels[chColors[1]], chColorChars[2], channels[chColors[2]], chColorChars[3], channels[chColors[3]]}
+        return true
+    end
+end
+
+function openEditMenu()
+    if chSelector(result[selection][1]) then
+        local i = result[selection][1]
+        fluidStr[i] = fluidData[i][1] .. " (" .. channels[chColors[1]] .. " - " .. channels[chColors[2]] .. " - " .. channels[chColors[3]] .. ")"
+        local chColorChars = {}
+        for i = 1, 3 do
+            chColorChars[i] = string.format("%x", chColors[i] - 1)
+        end
+        fluidData[i] = {fluidData[i][1], chColorChars[1], channels[chColors[1]], chColorChars[2], channels[chColors[2]], chColorChars[3], channels[chColors[3]]}
+        return true
+    end
+end
+
+function openRemoveMenu()
+    menuSelection = 1
+    term.setCursorPos(1, height - 1)
+    term.clearLine()
+    local i = result[selection][1]
+    term.write("Are you sure? Fluid \"" .. fluidData[i][1] .. "\" will be deleted.")
+    while true do
+        options = {"Yes", "No"}
+        drawMenu()
+        local event, key, _ = os.pullEvent("key")
+        if key == keys.left and menuSelection > 1 then
+            menuSelection = menuSelection - 1
+        elseif key == keys.right and menuSelection < #options then
+            menuSelection = menuSelection + 1
+        elseif key == keys.enter then
+            if menuSelection == 1 then
+                table.remove(fluidData, i)
+                table.remove(fluidStr, i)
+                return true
+            elseif menuSelection == 2 then
+                return false
+            end
+        elseif key == keys.leftCtrl or key == keys.rightCtrl then
+            quit()
+        end
+    end
+end
+
+function quit()
+    term.clear()
+    term.setCursorPos(1, 1)
+    error()
+end
         
 
 -- actual program starts here
@@ -97,12 +297,11 @@ if file == nil then
 end
 io.close(file)
 
-local width, height = term.getSize()
-local input = ""
-local fluidStr = {}
-local fluidData = {}
-local result = {}
-local selection = 1
+input = ""
+fluidStr = {}
+fluidData = {}
+result = {}
+selection = 1
 
 local debugText = "" -- for testing purposes
 
@@ -168,11 +367,11 @@ while true do
             input = #input > 0 and string.sub(input, 1, #input - 1) or input
             selection = 1
         elseif char == keys.enter then
-            --
+            if openManageMenu() then
+                input = ""
+            end
         elseif char == keys.leftCtrl or char == keys.rightCtrl then
-            term.clear()
-            term.setCursorPos(1, 1)
-            return
+            quit()
         elseif char == keys.delete then
             input = ""
             selection = 1
