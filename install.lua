@@ -1,4 +1,4 @@
--- script to fetch and install it easily
+-- script to fetch and install etanks.lua easily
 
 local etanksURL = "https://raw.githubusercontent.com/peachey2k2/etanks/main/etanks.lua"
 local fzyURL = "https://raw.githubusercontent.com/peachey2k2/etanks/main/lib/fzy.lua"
