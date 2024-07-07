@@ -7,5 +7,14 @@ This is a program I made to keep track of my ender tanks in with modpacks involv
 https://github.com/peachey2k2/etanks/assets/100072467/345c424b-e2dc-409a-b7d7-461a4e844963
 
 # Installation
-will add a pastebin here in the future
+Simply run the following command.
+```lua
+pastebin run pMr1ELTP
+```
+
+If you don't have access to pastebin, you can also `wget` it directily from this repo.
+```lua
+wget run https://raw.githubusercontent.com/peachey2k2/etanks/main/install.lua
+```
+
 
