@@ -157,7 +157,7 @@ function chUpdate()
     end
     term.setCursorPos(1, height-1)
     for _, i in pairs(chColors) do
-        term.setTextColor(2^(i-1))
+        term.setTextColor(i == 16 and 1 or 2^(i-1))
         term.write(channels[i])
         term.setTextColor(colors.white)
         term.write(" - ")
@@ -190,6 +190,7 @@ function chSelector(index)
                 chSelect = 1
             elseif key == keys.enter then
                 chColors[#chColors+1] = chResult[chSelect][1]
+                chInput = ""
                 if #chColors == 3 then
                     return true
                 end
@@ -216,19 +217,21 @@ function openAddMenu()
             chColorChars[i] = string.format("%x", chColors[i] - 1)
         end
         fluidData[#fluidData+1] = {input, chColorChars[1], channels[chColors[1]], chColorChars[2], channels[chColors[2]], chColorChars[3], channels[chColors[3]]}
+        save()
         return true
     end
 end
 
 function openEditMenu()
-    if chSelector(result[selection][1]) then
-        local i = result[selection][1]
+    local i = result[selection][1]
+    if chSelector(i) then
         fluidStr[i] = fluidData[i][1] .. " (" .. channels[chColors[1]] .. " - " .. channels[chColors[2]] .. " - " .. channels[chColors[3]] .. ")"
         local chColorChars = {}
         for i = 1, 3 do
             chColorChars[i] = string.format("%x", chColors[i] - 1)
         end
         fluidData[i] = {fluidData[i][1], chColorChars[1], channels[chColors[1]], chColorChars[2], channels[chColors[2]], chColorChars[3], channels[chColors[3]]}
+        save()
         return true
     end
 end
@@ -251,6 +254,7 @@ function openRemoveMenu()
             if menuSelection == 1 then
                 table.remove(fluidData, i)
                 table.remove(fluidStr, i)
+                save()
                 return true
             elseif menuSelection == 2 then
                 return false
@@ -261,6 +265,17 @@ function openRemoveMenu()
     end
 end
 
+function save()
+    local file = io.open(filename, "w")
+    if file == nil then
+        error("Error saving file. Sorry.")
+    end
+    for i = 1, #fluidData do
+        file:write(fluidData[i][2] .. fluidData[i][4] .. fluidData[i][6] .. fluidData[i][1] .. "\n")
+    end
+    io.close(file)
+end
+
 function quit()
     term.clear()
     term.setCursorPos(1, 1)
@@ -269,6 +284,11 @@ end
         
 
 -- actual program starts here
+
+if fs.isDir("data") == false then
+    fs.makeDir("data")
+end
+
 if arg[1] == "help" then
     print([[
         test
@@ -330,8 +350,8 @@ function updateScreen()
         term.write(" (")
         for i = 2, 6, 2 do
             if i ~= 2 then term.write(" - ") end
-            term.setTextColor(colors.fromBlit(cur[i]))
-            term. write(cur[i+1])
+            term.setTextColor(colors.fromBlit(cur[i] == "f" and "0" or cur[i]))
+            term.write(cur[i+1])
             term.setTextColor(colors.white)
         end
         term.write(")")
@@ -346,7 +366,7 @@ function updateScreen()
 end
 
 for line in io.lines(filename) do
-    local colorChars = string.sub(line, 1, 3)
+    local colorChars = {line[1], line[2], line[3]}
     local c = charToColor(colorChars)
     local fluid = string.sub(line, 4, #line)
     fluidStr[#fluidStr+1] = fluid .. " (" .. channels[c[1]] .. " - " .. channels[c[2]] .. " - " .. channels[c[3]] .. ")"
