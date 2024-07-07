@@ -290,14 +290,6 @@ if fs.isDir("data") == false then
     fs.makeDir("data")
 end
 
-if arg[1] == "help" then
-    print([[
-        test
-        test
-    ]])
-    return
-end
-
 if arg[1] == "gen" then
     if confirm("Are you sure you want to generate a new data file? This will overwrite your old data file if you have one.", false) then
         local file = io.open(filename, "w")
