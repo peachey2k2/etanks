@@ -211,7 +211,8 @@ end
 
 function openAddMenu()
     if chSelector(#fluidData + 1) then
-        fluidStr[#fluidStr+1] = input .. " (" .. channels[chColors[1]+1] .. " - " .. channels[chColors[2]+1] .. " - " .. channels[chColors[3]+1] .. ")"
+        print(chColors[1]+1)
+        fluidStr[#fluidStr+1] = input .. " (" .. channels[chColors[1]] .. " - " .. channels[chColors[2]] .. " - " .. channels[chColors[3]] .. ")"
         local chColorChars = {}
         for i = 1, 3 do
             chColorChars[i] = string.format("%x", chColors[i] - 1)
