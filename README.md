@@ -1,5 +1,5 @@
 # etanks
-This is a program I made to keep track of my ender tanks in with modpacks involving a lot of fluid passiving. It comes with coloring and searching to make youır job easier while using ender tanks.
+This is a program I made to keep track of my ender tanks with in modpacks involving a lot of fluid passiving. The saved tanks are colored and allows fuzzy searching to make youır job easier while using ender tanks.
 
 > [!NOTE]
 > Keep in mind that you'll need an advanced computer for coloring to work.
