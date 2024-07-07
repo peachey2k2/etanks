@@ -343,7 +343,11 @@ function updateScreen()
         term.write(" (")
         for i = 2, 6, 2 do
             if i ~= 2 then term.write(" - ") end
-            term.setTextColor(colors.fromBlit(cur[i] == "f" and "0" or cur[i]))
+            if cur[i] == "f" then
+                term.setTextColor(colors.white)
+            else
+                term.setTextColor(2^(tonumber(cur[i], 16)))
+            end
             term.write(cur[i+1])
             term.setTextColor(colors.white)
         end
