@@ -17,4 +17,17 @@ If you don't have access to pastebin, you can also `wget` it directily from this
 wget run https://raw.githubusercontent.com/peachey2k2/etanks/main/install.lua
 ```
 
+# Usage
+First, run `etanks gen` to generate a new empty data file. If you already have a data file, this will clear all its contents.
+
+After that, simply run `etanks` to open the program.
+
+**To add a fluid**, type its name, hit enter, select `Add fluid` and select its colors.
+
+Once you add some fluids, you can search through them by typing into the field below. It'll fuzzy-find through all the saved fluids and sort them appropriately. You can hit the `delete` key to clear the input field. All these functions can also be used while selecting colors.
+
+**To edit/remove a fluid**, select a fluid, hit enter and then select the desired option.
+
+**To quit the program**, hit `ctrl`. After each action, the file is saved, so you don't need to worry about that.
+
 
