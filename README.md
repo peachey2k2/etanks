@@ -22,12 +22,12 @@ First, run `etanks gen` to generate a new empty data file. If you already have a
 
 After that, simply run `etanks` to open the program.
 
-**To add a fluid**, type its name, hit enter, select `Add fluid` and select its colors.
+**To add a fluid**, type its name, hit `enter`, select `Add fluid` and select its colors.
 
-Once you add some fluids, you can search through them by typing into the field below. It'll fuzzy-find through all the saved fluids and sort them appropriately. You can hit the `delete` key to clear the input field. All these functions can also be used while selecting colors.
+Once you add some fluids, you can search through them by typing into the same field. It'll fuzzy-find through all the saved fluids and sort them appropriately. You can hit the `delete` key to clear the input field. All these functions can also be used while selecting colors.
 
-**To edit/remove a fluid**, select a fluid, hit enter and then select the desired option.
+**To edit/remove a fluid**, select a fluid, hit `enter` and then select the desired option.
 
-**To quit the program**, hit `ctrl`. After each action, the file is saved, so you don't need to worry about that.
+**To quit the program**, hit `ctrl`. The file is saved after each change, so you don't need to worry about that.
 
 
