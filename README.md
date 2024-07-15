@@ -2,7 +2,8 @@
 This is a program I made to keep track of my ender tanks with in modpacks involving a lot of fluid passiving. The saved tanks are colored and allows fuzzy searching to make youır job easier while using ender tanks.
 
 > [!NOTE]
-> Keep in mind that you'll need an advanced computer for coloring to work.
+> 1) Keep in mind that you'll need an advanced computer for coloring to work.
+> 2) On a pocket computer, most most of the text will not fit into the screen, so prefer using the regular computers.
 
 https://github.com/peachey2k2/etanks/assets/100072467/345c424b-e2dc-409a-b7d7-461a4e844963
 
