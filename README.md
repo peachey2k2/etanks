@@ -9,12 +9,12 @@ https://github.com/peachey2k2/etanks/assets/100072467/345c424b-e2dc-409a-b7d7-46
 
 # Installation
 Simply run the following command.
-```lua
+```
 pastebin run pMr1ELTP
 ```
 
 If you don't have access to pastebin, you can also `wget` it directily from this repo.
-```lua
+```
 wget run https://raw.githubusercontent.com/peachey2k2/etanks/main/install.lua
 ```
 
